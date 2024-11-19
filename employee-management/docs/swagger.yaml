@@ -1,0 +1,962 @@
+basePath: /
+definitions:
+  controllers.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  controllers.ResponseMessage:
+    properties:
+      message:
+        type: string
+    type: object
+  models.CustomTime:
+    properties:
+      time.Time:
+        type: string
+    type: object
+  models.Department:
+    properties:
+      description:
+        type: string
+      employees:
+        description: Liên kết với bảng Employees
+        items:
+          $ref: '#/definitions/models.Employee'
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.Employee:
+    properties:
+      address:
+        type: string
+      cmnd:
+        type: string
+      created_at:
+        type: string
+      date_of_birth:
+        type: string
+      department_id:
+        type: integer
+      email:
+        type: string
+      gender:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      position_id:
+        type: integer
+      role:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  models.Position:
+    properties:
+      description:
+        type: string
+      employees:
+        description: Liên kết với Employees qua bảng trung gian
+        items:
+          $ref: '#/definitions/models.Employee'
+        type: array
+      id:
+        type: integer
+      title:
+        type: string
+    type: object
+  models.ResponseMessage:
+    properties:
+      message:
+        type: string
+    type: object
+  models.Salary:
+    properties:
+      basic_salary:
+        type: integer
+      bonus:
+        type: integer
+      coefficient:
+        type: integer
+      created_at:
+        type: string
+      employee:
+        allOf:
+        - $ref: '#/definitions/models.Employee'
+        description: Liên kết với nhân viên (Employee)
+      employee_id:
+        description: Khóa ngoại liên kết với bảng Employee
+        type: integer
+      employee_name:
+        type: string
+      fine:
+        type: integer
+      id:
+        type: integer
+      total_salary:
+        type: integer
+      updated_at:
+        type: string
+      working_days:
+        type: integer
+    type: object
+  models.WorkAssignment:
+    properties:
+      assignment:
+        description: Mô tả công việc
+        type: string
+      created_at:
+        description: Ngày tạo
+        type: string
+      employee:
+        allOf:
+        - $ref: '#/definitions/models.Employee'
+        description: Liên kết với nhân viên (Employee)
+      employee_id:
+        description: Khóa ngoại liên kết với bảng Employee
+        type: integer
+      employee_name:
+        description: Tên nhân viên
+        type: string
+      end_date:
+        allOf:
+        - $ref: '#/definitions/models.CustomTime'
+        description: Ngày kết thúc công tác
+      id:
+        type: integer
+      start_date:
+        allOf:
+        - $ref: '#/definitions/models.CustomTime'
+        description: Ngày bắt đầu công tác
+      status:
+        type: string
+      updated_at:
+        description: Ngày cập nhật
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+    url: http://www.swagger.io/support
+  description: API for managing employees, departments, positions, and salaries.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Employee Management API
+  version: "1.0"
+paths:
+  /api/v1/departments:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all departments
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Department'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      summary: Get all departments
+      tags:
+      - Department
+    post:
+      consumes:
+      - application/json
+      description: Add a new department record to the database
+      parameters:
+      - description: Department data
+        in: body
+        name: department
+        required: true
+        schema:
+          $ref: '#/definitions/models.Department'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Department'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      summary: Create a new department
+      tags:
+      - Department
+  /api/v1/departments/{department_id}/employees:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all employees in a specific department
+      parameters:
+      - description: Department ID
+        in: path
+        name: department_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Employee'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      summary: Get employees by department
+      tags:
+      - Department
+  /api/v1/departments/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a department record from the database
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.ResponseMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      summary: Delete a department
+      tags:
+      - Department
+    put:
+      consumes:
+      - application/json
+      description: Update an existing department's information
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated department data
+        in: body
+        name: department
+        required: true
+        schema:
+          $ref: '#/definitions/models.Department'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Department'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      summary: Update a department
+      tags:
+      - Department
+  /api/v1/employees:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all employees
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Employee'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      summary: Get all employees
+      tags:
+      - Employee
+    post:
+      consumes:
+      - application/json
+      description: Add a new employee record to the database
+      parameters:
+      - description: Employee data
+        in: body
+        name: employee
+        required: true
+        schema:
+          $ref: '#/definitions/models.Employee'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Employee'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      summary: Create a new employee
+      tags:
+      - Employee
+  /api/v1/employees/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove an employee record from the database
+      parameters:
+      - description: Employee ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.ResponseMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      summary: Delete an employee
+      tags:
+      - Employee
+    put:
+      consumes:
+      - application/json
+      description: Update details of an existing employee
+      parameters:
+      - description: Employee ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated employee data
+        in: body
+        name: employee
+        required: true
+        schema:
+          $ref: '#/definitions/models.Employee'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Employee'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      summary: Update an employee
+      tags:
+      - Employee
+  /api/v1/employees/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate an employee using email and password
+      parameters:
+      - description: Email and Password
+        in: body
+        name: loginData
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.ResponseMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      summary: Login an employee
+      tags:
+      - Employee
+  /api/v1/employees/register:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new employee record with hashed password
+      parameters:
+      - description: Employee data
+        in: body
+        name: employee
+        required: true
+        schema:
+          $ref: '#/definitions/models.Employee'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Employee'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      summary: Register a new employee
+      tags:
+      - Employee
+  /api/v1/positions:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all positions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Position'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get all positions
+      tags:
+      - Position
+    post:
+      consumes:
+      - application/json
+      description: Add a new position record to the database
+      parameters:
+      - description: Position data
+        in: body
+        name: position
+        required: true
+        schema:
+          $ref: '#/definitions/models.Position'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create a new position
+      tags:
+      - Position
+  /api/v1/positions/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a position record from the database
+      parameters:
+      - description: Position ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Delete a position
+      tags:
+      - Position
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a position by its ID
+      parameters:
+      - description: Position ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Position'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get position by ID
+      tags:
+      - Position
+    put:
+      consumes:
+      - application/json
+      description: Update the details of a position by its ID
+      parameters:
+      - description: Position ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated position data
+        in: body
+        name: position
+        required: true
+        schema:
+          $ref: '#/definitions/models.Position'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Update an existing position
+      tags:
+      - Position
+  /api/v1/positions/{position_id}/employees:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all employees in a specific position
+      parameters:
+      - description: Position ID
+        in: path
+        name: position_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Employee'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get employees by position
+      tags:
+      - Position
+  /api/v1/salaries:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all salaries, including employee information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Salary'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      summary: Get all salaries
+      tags:
+      - Salary
+    post:
+      consumes:
+      - application/json
+      description: Add a new salary record for an employee
+      parameters:
+      - description: Salary data
+        in: body
+        name: salary
+        required: true
+        schema:
+          $ref: '#/definitions/models.Salary'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Salary'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      summary: Create a new salary
+      tags:
+      - Salary
+  /api/v1/salaries/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a salary record by its ID
+      parameters:
+      - description: Salary ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.ResponseMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      summary: Delete a salary
+      tags:
+      - Salary
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a salary by its ID, including employee information
+      parameters:
+      - description: Salary ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Salary'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      summary: Get salary by ID
+      tags:
+      - Salary
+    put:
+      consumes:
+      - application/json
+      description: Update a salary record by its ID
+      parameters:
+      - description: Salary ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated salary data
+        in: body
+        name: salary
+        required: true
+        schema:
+          $ref: '#/definitions/models.Salary'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Salary'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.ErrorResponse'
+      summary: Update an existing salary
+      tags:
+      - Salary
+  /api/v1/work-assignments:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all work assignments, including employee information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get all work assignments
+      tags:
+      - WorkAssignment
+    post:
+      consumes:
+      - application/json
+      description: Add a new work assignment for an employee
+      parameters:
+      - description: Work assignment data
+        in: body
+        name: workAssignment
+        required: true
+        schema:
+          $ref: '#/definitions/models.WorkAssignment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create a new work assignment
+      tags:
+      - WorkAssignment
+  /api/v1/work-assignments/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a work assignment by ID
+      parameters:
+      - description: Work Assignment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Delete a work assignment
+      tags:
+      - WorkAssignment
+    put:
+      consumes:
+      - application/json
+      description: Update an existing work assignment by ID
+      parameters:
+      - description: Work Assignment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated work assignment data
+        in: body
+        name: workAssignment
+        required: true
+        schema:
+          $ref: '#/definitions/models.WorkAssignment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseMessage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Update a work assignment
+      tags:
+      - WorkAssignment
+swagger: "2.0"

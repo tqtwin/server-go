@@ -2,11 +2,13 @@ version: '3.8'
 
 services:
   app:
-    build: ./server
+    build:
+      context: ./employee-management # Thư mục chứa Dockerfile
+      dockerfile: Dockerfile         # Tên file Dockerfile
     container_name: go_server
     restart: always
     ports:
-      - "8080:8080" # Cổng ứng dụng Go
+      - "8080:8080" # Cổng của ứng dụng Go
     environment:
       - ENV=dev
       - DEV_DB_USER=root
@@ -27,7 +29,7 @@ services:
       MYSQL_USER: root
       MYSQL_PASSWORD: passroot
     ports:
-      - "3306:3306" # Expose MySQL port
+      - "3306:3306" # Cổng của MySQL
     volumes:
       - mysql_data:/var/lib/mysql
 

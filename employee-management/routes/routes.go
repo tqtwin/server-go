@@ -38,7 +38,7 @@ func SetupRouter() *gin.Engine {
 		{
 			positionRoutes.GET("/", controllers.GetPositions)
 			// positionRoutes.GET("/:id", controllers.GetPositionByID)
-			positionRoutes.GET("/:id/employees", controllers.GetEmployeesByPosition)
+			positionRoutes.GET("/:position_id/employees", controllers.GetEmployeesByPosition)
 			positionRoutes.POST("/", controllers.CreatePosition)
 			positionRoutes.PUT("/:id", controllers.UpdatePosition)
 			positionRoutes.DELETE("/:id", controllers.DeletePosition)

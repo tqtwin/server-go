@@ -1,19 +1,21 @@
-FROM golang:1.20
+# Sử dụng image Go chính thức làm base image
+FROM golang:1.23 AS build
 
-# Set up working directory
+
+# Đặt thư mục làm việc trong container
 WORKDIR /app
 
-# Copy files
-COPY . .
+# Sao chép go.mod và go.sum vào container
+COPY employee-management/go.mod employee-management/go.sum ./
 
-# Install dependencies
+# Chạy go mod tidy để cài đặt dependencies
 RUN go mod tidy
 
-# Build the application
+# Sao chép tất cả mã nguồn còn lại vào container
+COPY employee-management/ .
+
+# Biên dịch ứng dụng Go
 RUN go build -o main .
 
-# Expose the application port
-EXPOSE 8080
-
-# Command to run the application
+# Chạy ứng dụng Go
 CMD ["./main"]

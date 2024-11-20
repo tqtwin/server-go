@@ -36,7 +36,8 @@ func GetSalaries(c *gin.Context) {
 	if month != "" {
 		monthInt, err := strconv.Atoi(month)
 		if err == nil {
-			query = query.Where("MONTH(created_at) = ?", monthInt)
+			// PostgreSQL: EXTRACT(MONTH FROM created_at) instead of MONTH
+			query = query.Where("EXTRACT(MONTH FROM created_at) = ?", monthInt)
 		}
 	}
 
@@ -44,7 +45,8 @@ func GetSalaries(c *gin.Context) {
 	if quarter != "" {
 		quarterInt, err := strconv.Atoi(quarter)
 		if err == nil {
-			query = query.Where("QUARTER(created_at) = ?", quarterInt)
+			// Calculate quarter using EXTRACT: (Month / 3) and rounding up.
+			query = query.Where("EXTRACT(QUARTER FROM created_at) = ?", quarterInt)
 		}
 	}
 
@@ -52,7 +54,8 @@ func GetSalaries(c *gin.Context) {
 	if year != "" {
 		yearInt, err := strconv.Atoi(year)
 		if err == nil {
-			query = query.Where("YEAR(created_at) = ?", yearInt)
+			// PostgreSQL: EXTRACT(YEAR FROM created_at) instead of YEAR
+			query = query.Where("EXTRACT(YEAR FROM created_at) = ?", yearInt)
 		}
 	}
 
@@ -109,7 +112,6 @@ func GetSalaryByID(c *gin.Context) {
 // @Failure 404 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /api/v1/salaries [post]
-// CreateSalary godoc
 func CreateSalary(c *gin.Context) {
 	var salary models.Salary
 	if err := c.ShouldBindJSON(&salary); err != nil {
@@ -123,6 +125,9 @@ func CreateSalary(c *gin.Context) {
 		c.JSON(http.StatusNotFound, ErrorResponse{Error: "Employee not found"})
 		return
 	}
+
+	// Tính toán total_salary
+	salary.TotalSalary = (salary.BasicSalary/salary.Coefficient)*int(salary.WorkingDays) + salary.Bonus - salary.Fine
 
 	// Thiết lập trạng thái mặc định là "Chưa thanh toán"
 	salary.Status = "Chưa thanh toán"
@@ -149,7 +154,6 @@ func CreateSalary(c *gin.Context) {
 // @Failure 404 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /api/v1/salaries/{id} [put]
-// UpdateSalary godoc
 func UpdateSalary(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -167,7 +171,7 @@ func UpdateSalary(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid input data"})
 		return
 	}
-
+	salary.TotalSalary = (salary.BasicSalary/salary.Coefficient)*int(salary.WorkingDays) + salary.Bonus - salary.Fine
 	// Cập nhật bảng lương
 	if err := config.GetDB().Save(&salary).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Failed to update salary"})
@@ -269,16 +273,19 @@ func GetSalaryStatistics(c *gin.Context) {
 	if month != "" {
 		monthInt, err := strconv.Atoi(month)
 		if err == nil {
-			query = query.Where("MONTH(created_at) = ?", monthInt)
+			// PostgreSQL: EXTRACT(MONTH FROM created_at)
+			query = query.Where("EXTRACT(MONTH FROM created_at) = ?", monthInt)
 		} else {
 			c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid month format"})
 			return
 		}
 	}
+
 	if year != "" {
 		yearInt, err := strconv.Atoi(year)
 		if err == nil {
-			query = query.Where("YEAR(created_at) = ?", yearInt)
+			// PostgreSQL: EXTRACT(YEAR FROM created_at)
+			query = query.Where("EXTRACT(YEAR FROM created_at) = ?", yearInt)
 		} else {
 			c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid year format"})
 			return

@@ -32,7 +32,7 @@ func main() {
 	config.Connect()
 
 	// Tự động migrate bảng Employee và các bảng khác
-	config.GetDB().AutoMigrate(
+	err := config.GetDB().AutoMigrate(
 		&models.Department{},
 		&models.Position{},
 		&models.Employee{},
@@ -41,7 +41,10 @@ func main() {
 		&models.EmployeeDepartment{},
 		&models.EmployeePosition{},
 	)
-
+	if err != nil {
+		fmt.Println("Error during migration:", err)
+		return
+	}
 	fmt.Println("Tables migrated successfully.")
 
 	// Khởi tạo router

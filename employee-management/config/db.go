@@ -6,24 +6,25 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres" // Cập nhật sử dụng PostgreSQL
 	"gorm.io/gorm"
 )
 
 var DB *gorm.DB
 
+// Kết nối đến PostgreSQL
 func Connect() {
-	// Load environment variables from .env file
+	// Load môi trường từ .env (nếu cần)
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
 
-	// Get the current environment (dev, qc, prod)
+	// Lấy thông tin môi trường hiện tại (dev, qc, prod)
 	env := os.Getenv("ENV")
 	var user, password, host, port, dbName string
 
-	// Based on the environment, set the database credentials
+	// Dựa trên môi trường, thiết lập thông tin đăng nhập cơ sở dữ liệu
 	switch env {
 	case "dev":
 		user = os.Getenv("DEV_DB_USER")
@@ -47,17 +48,26 @@ func Connect() {
 		log.Fatalf("Unknown environment: %s", env)
 	}
 
-	// Create DSN (Data Source Name)
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true&loc=Local", user, password, host, port, dbName)
+	// Tạo DSN (Data Source Name) cho PostgreSQL
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=require TimeZone=Asia/Ho_Chi_Minh",
+		host,
+		user,
+		password,
+		dbName,
+		port,
+	)
 
-	// Connect to the database
-	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	// Kết nối tới cơ sở dữ liệu PostgreSQL
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		fmt.Printf(dsn)
-		panic("failed to connect database")
+		fmt.Printf("DSN: %s\n", dsn)
+		panic("failed to connect to database")
 	}
+
+	log.Println("Database connected successfully!")
 }
 
+// Lấy kết nối DB
 func GetDB() *gorm.DB {
 	return DB
 }

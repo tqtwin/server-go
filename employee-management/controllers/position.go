@@ -75,12 +75,12 @@ func GetPositionByID(c *gin.Context) {
 // @Failure 500 {object} models.ErrorResponse
 // @Router /api/v1/positions/{position_id}/employees [get]
 func GetEmployeesByPosition(c *gin.Context) {
-	positionID := c.Param("position_id")
+	positionID := c.Param("id")
 
 	var employees []models.Employee
 
 	// Query employees with the specified position ID
-	if err := config.GetDB().Where("position_id = ?", positionID).Find(&employees).Error; err != nil {
+	if err := config.GetDB().Where("id = ?", positionID).Find(&employees).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to fetch employees for this position"})
 		return
 	}

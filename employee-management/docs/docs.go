@@ -1260,7 +1260,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "employees": {
-                    "description": "Liên kết với bảng Employees",
+                    "description": "Link",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.Employee"
@@ -1339,7 +1339,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "employees": {
-                    "description": "Liên kết với Employees qua bảng trung gian",
+                    "description": "Link",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.Employee"
@@ -1377,7 +1377,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "employee": {
-                    "description": "Liên kết với nhân viên (Employee)",
+                    "description": "",
                     "allOf": [
                         {
                             "$ref": "#/definitions/models.Employee"
@@ -1385,7 +1385,7 @@ const docTemplate = `{
                     ]
                 },
                 "employee_id": {
-                    "description": "Khóa ngoại liên kết với bảng Employee",
+                    "description": "Foreign key",
                     "type": "integer"
                 },
                 "employee_name": {
@@ -1412,15 +1412,15 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "assignment": {
-                    "description": "Mô tả công việc",
+                    "description": "Job description",
                     "type": "string"
                 },
                 "created_at": {
-                    "description": "Ngày tạo",
+                    "description": "Created date",
                     "type": "string"
                 },
                 "employee": {
-                    "description": "Liên kết với nhân viên (Employee)",
+                    "description": "",
                     "allOf": [
                         {
                             "$ref": "#/definitions/models.Employee"
@@ -1428,15 +1428,15 @@ const docTemplate = `{
                     ]
                 },
                 "employee_id": {
-                    "description": "Khóa ngoại liên kết với bảng Employee",
+                    "description": "Foreign key",
                     "type": "integer"
                 },
                 "employee_name": {
-                    "description": "Tên nhân viên",
+                    "description": "Employee name",
                     "type": "string"
                 },
                 "end_date": {
-                    "description": "Ngày kết thúc công tác",
+                    "description": "Ending work time",
                     "allOf": [
                         {
                             "$ref": "#/definitions/models.CustomTime"
@@ -1447,7 +1447,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "start_date": {
-                    "description": "Ngày bắt đầu công tác",
+                    "description": "Beginning work time",
                     "allOf": [
                         {
                             "$ref": "#/definitions/models.CustomTime"
@@ -1473,7 +1473,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Employee Management API",
-	Description:      "API for managing employees, departments, positions, and salaries.",
+	Description:      "API for managing employees, departments, and salaries.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
